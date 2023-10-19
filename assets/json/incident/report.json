@@ -1,0 +1,66 @@
+[
+    {
+        "title": "PPE Violation", 
+        "id": 1,
+        "incidentType": "Unsafe Act",
+        "description": "Not wearing gloves while serving",
+        "location": "SC Cafeteria",
+        "risklevel": "Minor",
+        "status": true, 
+        "date": "10/10/23"    },
+    {
+        "title": "Loose Chair", 
+        "id": 2,
+        "incidentType": "Near Miss",
+        "description": "Almost fell of Chair",
+        "location": "Adamjee",
+        "risklevel": "Minor",
+        "status": true, 
+        "date": "7/8/23"   
+     },
+        {
+        "title": "Theft Incident", 
+        "id": 3,
+        "incidentType": "Safety and Security",
+        "description": "Student caught stealing wallet from pocket",
+        "location": "SC",
+        "risklevel": "Serious",
+        "status": true, 
+        "date": "17/8/23"   
+     },
+     {
+        "title": "PPE Violation", 
+        "id": 4,
+        "incidentType": "Unsafe Act",
+        "description": "Not wearing gloves while serving",
+        "location": "SC Cafeteria",
+        "risklevel": "Minor",
+        "status": true, 
+        "date": "10/10/23"    },
+    {
+        "title": "Loose Chair", 
+        "id": 5,
+        "incidentType": "Near Miss",
+        "description": "Almost fell of Chair",
+        "location": "Adamjee",
+        "risklevel": "Minor",
+        "status": true, 
+        "date": "7/8/23"   
+     },
+        {
+        "title": "Theft Incident", 
+        "id": 6,
+        "incidentType": "Safety and Security",
+        "description": "Student caught stealing wallet from pocket",
+        "location": "SC",
+        "risklevel": "Serious",
+        "status": true, 
+        "date": "17/8/23"   
+     }
+
+
+
+
+    ]
+
+
