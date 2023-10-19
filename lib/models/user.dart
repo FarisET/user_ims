@@ -10,8 +10,16 @@ class User {
         json['user_id'], json['user_pass']);
   }
   factory User.fromJson(Map<String, dynamic> json) {
+ //       json['user_id'], json['user_pass'],);
+  if (json != null) {
     return User(
-        json['user_id'], json['user_pass'],);
+      json['user_id'],
+      json['user_pass'],
+    );
+  } else {
+    // Handle the case where the JSON data is null or invalid.
+    return User("","");
+  }
   }
 
   Map<String, dynamic> toJson() => {

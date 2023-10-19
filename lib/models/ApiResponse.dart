@@ -11,3 +11,8 @@ class ApiResponse {
   Object get ApiError => _apiError as Object;
   set ApiError(Object error) => _apiError = error;
 }
+
+
+
+
+
