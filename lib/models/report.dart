@@ -22,9 +22,9 @@ class Reports {
     
     factory Reports.fromJson(Map<String, dynamic> json) {
       return Reports(
-        title: json['title'],
+       title: json['title'],
        incidentType: json['incidentType'], 
-       id: json['id'],
+       id: json['id'], //Autogenerate 8 digit  serialized id
        description: json['description'], 
        location: json['location'], 
        date: json['date'], 

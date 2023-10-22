@@ -1,3 +1,25 @@
+class ApiError {
+  String? _error = null;
+
+  ApiError({String? error}) {
+    this._error = error;
+  }
+
+  String? get error => _error;
+  set error(String? error) => _error = error;
+
+  ApiError.fromJson(Map<String, dynamic> json) {
+    _error = json['status'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = _error;
+    return data;
+  }
+}
+
+
 // class ApiError {
 //   late String _error;
 
@@ -20,14 +42,14 @@
 //   }
 // }
 
-class ApiError {
-  String? error; // Use a nullable string to handle null values
+// class ApiError {
+//   String? error; // Use a nullable string to handle null values
 
-  ApiError({this.error = ''});
+//   ApiError({this.error = ''});
 
-  factory ApiError.fromJson(Map<String, dynamic> json) {
-    return ApiError(
-      error: json['error'] ?? '', // Provide a default value for null
-    );
-  }
-}
+//   factory ApiError.fromJson(Map<String, dynamic> json) {
+//     return ApiError(
+//       error: json['error'] ?? '', // Provide a default value for null
+//     );
+//   }
+// }

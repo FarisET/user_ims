@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:user_ims/services/UserServices.dart';
 import 'package:user_ims/widgets/report_tile.dart';
+
+import 'login_page.dart';
 
 // ignore_for_file: prefer_const_constructors
 
@@ -18,7 +21,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return 
     Scaffold(
-      appBar: AppBar(title: Text('Incident Reporting')),
+      appBar: AppBar(
+        title: Text('Incident Reporting'),
+        actions: [
+            SizedBox(
+              height: 100,
+              child: IconButton(
+                icon: Icon(Icons.exit_to_app),
+                onPressed: () {
+                  // Perform logout actions here
+                  handleLogout(context);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+              ),
+            ),
+        ],        ),
       backgroundColor: Colors.blue[600],
       body: SafeArea(
         child: Column(
@@ -50,7 +67,12 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white
-                          ) )                 ],
+                          ) 
+                          ),
+                           
+
+                        ],
+                            
                           
                     ),
                 
@@ -117,10 +139,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 30,
               ),
-  
-
-
-            
+              
                 //Previous reports
                   Container
                   (
@@ -150,87 +169,6 @@ class _HomePageState extends State<HomePage> {
 
                         ReportTile()
 
-                        // Expanded(
-                        //   child: ListView(
-                        //   children: [
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'PPE Violation', 
-                        //         id: 123456,
-                        //         incidentType: 'Unsafe Act',
-                        //         description: 'Not wearing gloves while serving',
-                        //         location: 'SC Cafeteria',
-                        //         risklevel: 'Minor',
-                        //         status: true, 
-                        //         date: '10/10/23'
-                        //         ),
-                        //     ),
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'Loose Chair', 
-                        //         id: 73981,
-                        //         incidentType: 'Near Miss',
-                        //         description: 'Almost fell of Chair',
-                        //         location: 'TABBA MTL4',
-                        //         risklevel: 'Minor',
-                        //         status: true, 
-                        //         date: '18/07/23'
-                        //         ),
-                        //     ),                             
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'Theft Incident', 
-                        //         id: 123456,
-                        //         incidentType: 'Safety and Security',
-                        //         description: 'Student caught stealing wallet from pocket',
-                        //         location: 'Adamjee Cafe',
-                        //         risklevel: 'Serious',
-                        //         status: false, 
-                        //         date: '5/10/23'
-                        //         ),
-                        //     ),   
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'Running pipe', 
-                        //         id: 123456,
-                        //         incidentType: 'Wastage of Resources',
-                        //         description: 'Pipe running in fauji ground for 15 minutes',
-                        //         location: 'SC Cafeteria',
-                        //         risklevel: 'Minor',
-                        //         status: true, 
-                        //         date: '10/10/23'
-                        //         ),
-                        //     ),
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'Missing Student: Faris Ejaz', 
-                        //         id: 123456,
-                        //         incidentType: 'Entity Lost',
-                        //         description: 'Sudent last seen in library yesterday, vansihed since.',
-                        //         location: 'SC Cafeteria',
-                        //         risklevel: 'Minor',
-                        //         status: true, 
-                        //         date: '10/10/23'
-                        //         ),
-                        //     ),
-
-                        //     SingleChildScrollView(
-                        //       child: ReportTile(
-                        //         title: 'PPE Violation', 
-                        //         id: 123456,
-                        //         incidentType: 'Unsafe Act',
-                        //         description: 'Not wearing gloves while serving',
-                        //         location: 'SC Cafeteria',
-                        //         risklevel: 'Minor',
-                        //         status: true, 
-                        //         date: '10/10/23'
-                        //         ),
-                        //     ),                                                                                                   
-                        
-                        //     ],
-                        //   ),
-                        // )
-
                         
                       ]
                     )   
@@ -244,4 +182,11 @@ class _HomePageState extends State<HomePage> {
     
     );
   }
+
+
+  void handleLogout(BuildContext context) async {
+    UserServices userServices = UserServices(context);
+    await userServices.logout();
+  }
 }
+
