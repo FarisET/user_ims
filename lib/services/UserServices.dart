@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:user_ims/models/user.dart';
 
 class UserServices {
   final BuildContext context;  // Include the BuildContext in the constructor
@@ -60,9 +59,6 @@ class UserServices {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.remove("user_id");
 }
-
-
-
 
 }
 

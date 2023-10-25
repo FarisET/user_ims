@@ -5,7 +5,7 @@ class SelectableContainer extends StatefulWidget {
   final bool isSelected;
   final Function(bool) onSelect;
 
-  SelectableContainer({
+  const SelectableContainer({super.key, 
     required this.label,
     required this.isSelected,
     required this.onSelect,
@@ -47,6 +47,8 @@ class _SelectableContainerState extends State<SelectableContainer> {
 }
 
 class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
+
   @override
   _MyWidgetState createState() => _MyWidgetState();
 }

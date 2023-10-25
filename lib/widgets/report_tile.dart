@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:user_ims/widgets/reports_api.dart';
+import 'package:user_ims/services/ReportServices.dart';
 
 import '../models/report.dart';
  
@@ -13,33 +13,13 @@ class ReportTile extends StatefulWidget {
 }
 
 class _ReportTileState extends State<ReportTile> {
+  late Future<List<Reports>> futureReports;
   
-//   final String title;
-//   final String incidentType;
-//   final int id;
-//   final String description;
-//   final String location;
-//   final String date;
-//   final String risklevel;
-//   final bool status;
-
-//   const ReportTile({
-//     Key? key,
-//     required this.title,
-//     required this.incidentType,
-//     required this.id,
-//     required this.description,
-//     required this.location,
-//     required this.date,
-//     required this.risklevel,
-//     required this.status
-// }) : super(key: key);
-  late Future<List<Reports>> futureReports; 
 
   @override
   void initState() {
     super.initState();
-    futureReports = fetchReports();
+    futureReports = ReportServices(context).fetchReports();
   }
 
 
@@ -49,34 +29,93 @@ class _ReportTileState extends State<ReportTile> {
   Widget build(BuildContext context) {
     return Center(
       child: FutureBuilder<List<Reports>>(
-        future: fetchReports(), 
+        future: futureReports, 
         builder: (context, snapshot) {
           if(snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data?.length,
-              itemBuilder: (context, i) {
-                var item = snapshot.data![i];
+             return ListView.builder(
+                itemCount: snapshot.data?.length,
+                itemBuilder: (context, i) {
+                  var item = snapshot.data![i];
+            
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius:BorderRadius.circular(4),
+                      side: BorderSide(
+                        color: item.status?Colors.greenAccent:Colors.redAccent,
+                        width:0.5)),                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom:8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(item.incidentType,
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 18
+                                      ),),
+                                      Text('id: ${item.id}'),
+                                    ],
+                                  ),
+                                ),
+                            
+                            // Padding(
+                            //   padding: const EdgeInsets.only(bottom:4.0),
+                            //   child: Text(item.incidentType,
+                            //   style: TextStyle(
+                            //     color: Colors.grey,
+                            //   ),
 
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius:BorderRadius.circular(4),
-                    ),
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: ListTile(
-                      title: Text(item.title),
-                      subtitle:Text(item.description),
-                      trailing: Text(item.id.toString()),
+                            //   ),
+                            // ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom:4.0),
+                              child: Text('${item.location}, ${item.date}'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom:4.0),
+                              child: Text('By: Faris Ejaz'),
+                            ),
+                            //TODO: get user name dynamically
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Last Modified:11, August 2023 at 11:09 am'),
+                                item.status ? Text('Closed',
+                                style: TextStyle(color: Colors.green),) :
+                                Text('Open',
+                                style: TextStyle(color: Colors.red),)
+                                //TODO: change status color dynamically
+                              ],
+                          ),
+                   ]),
+
+                          
                       
-                    )
+                      
+                      
+                          ],),
+                      )
+                  );
+                },
+            
                 );
-              },
-
-              );
+            
           } else if(snapshot.hasError) {
             return Text('${snapshot.error}');
-          } else {
-            return CircularProgressIndicator();
           }
+            return CircularProgressIndicator();
   })
     );
 
@@ -93,8 +132,8 @@ class _ReportTileState extends State<ReportTile> {
       // //   ),
       // // ),
       //     ),
-    
-}                  
+
+}    
 
 
    

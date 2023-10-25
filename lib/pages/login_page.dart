@@ -4,13 +4,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_ims/services/UserServices.dart';
 
 
 
     class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
       @override
       _LoginPageState createState() => _LoginPageState();
         
@@ -125,7 +126,8 @@ Widget makeInput({
     validator: (value) {
     if (value == null || value.isEmpty) {
       return 'This field is required';
-    };
+    }
+return null;
      } // Add the validation function
   );
 }

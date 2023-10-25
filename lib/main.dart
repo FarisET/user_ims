@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:user_ims/pages/home_page.dart';
 import 'package:user_ims/pages/login_page.dart';
 import 'package:user_ims/pages/user_form.dart';
-import 'package:user_ims/widgets/report_tile.dart';
 
-import 'error_page.dart';
+import 'pages/error_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,11 +17,11 @@ class MyApp extends StatelessWidget {
     return  MaterialApp(
         onUnknownRoute: (settings) {
     return MaterialPageRoute(
-      builder: (context) => ErrorPage(), // Replace with your error handling page
+      builder: (context) => const ErrorPage(), // Replace with your error handling page
     );
   },
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: const LoginPage(),
         routes: {
     '/home_page':(context) => const HomePage(),
     '/form_page': (context) => const UserForm(),

@@ -1,6 +1,8 @@
 
+import 'dart:io';
+
 class Reports {
-  final String title;
+ final String? image;
   final String incidentType;
   final int id;
   final String description;
@@ -10,7 +12,7 @@ class Reports {
   final bool status;
 
   const Reports({
-    required this.title, 
+    required this.image, 
     required this.incidentType,
     required this.id,
     required this.description,
@@ -22,14 +24,17 @@ class Reports {
     
     factory Reports.fromJson(Map<String, dynamic> json) {
       return Reports(
-       title: json['title'],
+       image: json['image'],    
+       location: json['location'],    
        incidentType: json['incidentType'], 
+       //TODO: add incident sub type
        id: json['id'], //Autogenerate 8 digit  serialized id
        description: json['description'], 
-       location: json['location'], 
        date: json['date'], 
        risklevel: json['risklevel'],
-        status: json['status']
+       status: json['status']
+        //image
+        //Name
         );
         
     }
