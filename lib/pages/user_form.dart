@@ -1,9 +1,15 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:user_ims/models/incident_types.dart';
 import 'package:user_ims/services/ReportServices.dart';
+import 'package:provider/provider.dart';
+
+import '../models/incident_type_provider.dart';
 
 class UserForm extends StatefulWidget {
   const UserForm({Key? key});
@@ -17,8 +23,8 @@ class _UserFormState extends State<UserForm> {
   int selectedChipIndex = -1;
   List<bool> isSelected = [false, false, false];
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
-  String value = 'Safety';
-  List<String> dropdownMenuEntries = ["Safety", "Security", "Code of Conduct Violation", "Maintenance"];
+  String incidentType = 'Safety';
+  List<String> dropdownMenuEntries = [];
 
   Color? _getSelectedColor(int index) {
     if (isSelected[index]) {
@@ -33,7 +39,6 @@ class _UserFormState extends State<UserForm> {
     return null;
   }
 
-  String incidentType = 'Safety';
   int id = 0; // auto-generated
   String location = '';
   String description = '';
@@ -43,24 +48,34 @@ class _UserFormState extends State<UserForm> {
   File? selectedImage; // Declare selectedImage as nullable
   String title = "PPE Violation";
 
-  DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
-        value: item,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 12.0),
-          child: Row(
-            children: [
-              Icon(Icons.health_and_safety, color: Colors.blue),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: Text(
-                  item,
-                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
-                ),
+  DropdownMenuItem<String> buildMenuItem(IncidentType type) {
+    return DropdownMenuItem<String>(
+      value: type.Incident_Type_Description,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            Icon(Icons.health_and_safety, color: Colors.blue),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                type.Incident_Type_Description,
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Provider.of<IncidentProviderClass>(context, listen: false).getPostData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,26 +204,49 @@ class _UserFormState extends State<UserForm> {
                             SizedBox(
                               height: 10,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: DropdownButton<String>(
-                                value: value,
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                isExpanded: true,
-                                icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
-                                items: dropdownMenuEntries.map((buildMenuItem)).toList(),
-                                onChanged: (value) => setState(() {
-                                  this.value = value!;
-                                  incidentType = value;
-                                }),
-                                underline: Container(height: 0, color: Colors.transparent),
-                              ),
+                            Consumer<IncidentProviderClass>(
+                              builder: (context, selectedVal, child) {
+                                if (selectedVal.loading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(), // Display a loading indicator
+                                  );
+                                } else {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FormField<String>(
+                                      builder: (FormFieldState<String> state) {
+                                        return DropdownButton<String>(
+                                            value: selectedVal.selectedIncident,
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                            isExpanded: true,
+                                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                                            underline: Container(),
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                value: null, // Placeholder value
+                                                child: Text('Select Incident Type'),
+                                              ),
+                                              ...selectedVal.incidentPost!.map((type) {
+                                                return buildMenuItem(type);
+                                              }).toList(),
+                                            ],
+                                            onChanged: (v) {
+                                              print('Selected Incident: $v');
+                                              selectedVal.setIncidentType(v);
+                                            },
+                                          );
+
+                                      },
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -270,8 +308,6 @@ class _UserFormState extends State<UserForm> {
                                   risklevel = chipLabels[index];
                                 }
                               });
-//                             Fluttertoast.showToast(msg: '${date.toIso8601String().split(".")[0]}');
-
                             },
                           );
                         }),
@@ -310,30 +346,27 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
+  Future _pickImageFromGallery() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-Future _pickImageFromGallery() async {
-  final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-  if (returnedImage != null) {
-    setState(() {
-      selectedImage = File(returnedImage.path);
-    });
-    Fluttertoast.showToast(msg: 'Image selected');
+    if (returnedImage != null) {
+      setState(() {
+        selectedImage = File(returnedImage.path);
+      });
+      Fluttertoast.showToast(msg: 'Image selected');
+    }
   }
-  // Add an else block here to handle the case when no image is selected.
-}
 
-Future _pickImageFromCamera() async {
-  final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+  Future _pickImageFromCamera() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
 
-  if (returnedImage != null) {
-    setState(() {
-      selectedImage = File(returnedImage.path);
-    });
-    Fluttertoast.showToast(msg: 'Image captured');
+    if (returnedImage != null) {
+      setState(() {
+        selectedImage = File(returnedImage.path);
+      });
+      Fluttertoast.showToast(msg: 'Image captured');
+    }
   }
-  // Add an else block here to handle the case when no image is captured.
-}
 }
 
 void handleReportSubmitted(BuildContext context, _UserFormState userFormState) async {

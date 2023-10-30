@@ -131,6 +131,9 @@ class _HomePageState extends State<HomePage> {
             ),
 
 //Previous reports
+Spacer(
+),
+
 Stack(
   alignment: AlignmentDirectional.bottomCenter,
   children: [
@@ -146,6 +149,7 @@ Stack(
               topRight: Radius.circular(20.0),
             ),
           ),
+
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -158,6 +162,7 @@ Stack(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                
                 SizedBox(
                   height: 10,
                 ),

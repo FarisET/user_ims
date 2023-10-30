@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import '../models/incident_sub_type.dart';
+import '../models/incident_types.dart';
 import '../models/report.dart';
 
 class ReportServices {
@@ -27,8 +29,12 @@ class ReportServices {
       return prevReportList;
     
     } 
-   throw Exception('Failed to load comments');
+   throw Exception('Failed to load Reports');
     }
+
+
+
+    //TODO: post selected incident type id to return incident sub type
 
   Future<bool> postReport(String image,int id, String location, String incidentType, String description, DateTime date, String risklevel, bool status) async {
     Uri url = Uri.parse('http://192.168.18.74:3000/makeUserReport');

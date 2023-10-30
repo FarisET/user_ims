@@ -67,15 +67,6 @@ class _ReportTileState extends State<ReportTile> {
                                   ),
                                 ),
                             
-                            // Padding(
-                            //   padding: const EdgeInsets.only(bottom:4.0),
-                            //   child: Text(item.incidentType,
-                            //   style: TextStyle(
-                            //     color: Colors.grey,
-                            //   ),
-
-                            //   ),
-                            // ),
                             Padding(
                               padding: const EdgeInsets.only(bottom:4.0),
                               child: Text('${item.location}, ${item.date}'),

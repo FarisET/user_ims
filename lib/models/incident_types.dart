@@ -1,16 +1,18 @@
+// ignore_for_file: non_constant_identifier_names
+
 class IncidentType {
-  final String label;
-  final String value;
+  final String Incident_Type_ID;
+  final String  Incident_Type_Description;
 
   const IncidentType({
-    required this.label, 
-    required this.value,
+    required this.Incident_Type_ID, 
+    required this. Incident_Type_Description,
     });
     
     factory IncidentType.fromJson(Map<String, dynamic> json) {
       return IncidentType(
-       label: json['label'],
-       value: json['value']
+       Incident_Type_ID: json['Incident_Type_ID'] ?? '',
+       Incident_Type_Description: json['Incident_Type_Description'] ?? ''
         );
         
     }
