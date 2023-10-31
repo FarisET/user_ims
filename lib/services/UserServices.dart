@@ -10,7 +10,7 @@ class UserServices {
   UserServices(this.context);  // Constructor for UserServices
 
   Future<bool> login(String id, String password) async {
-    Uri url = Uri.parse('http://192.168.18.74:3000/login');
+    Uri url = Uri.parse('http://192.168.71.223:3000/login');
     try {
       final http.Response response = await http.post(
         url,
@@ -23,15 +23,19 @@ class UserServices {
         ),
       );
       final status = json.decode(response.body)['status'];
+      final user_name = json.decode(response.body)['user_name'];  
+      final role = json.decode(response.body)['role'];  
 
       if (response.statusCode == 200) {
         final jsonBody = json.decode(response.body);
        // return true;
           // User user = User.fromJson(jsonBody);
           // print(user);
-          // SharedPreferences prefs = await SharedPreferences.getInstance();
-          // await prefs.setString("user_id", user.user_id);
-          // print(prefs);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString("user_name", user_name);
+          await prefs.setString("role", role);
+
+          print('user name: $user_name');
           return true;
         
       } else if (response.statusCode == 401) {

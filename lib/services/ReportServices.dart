@@ -14,7 +14,7 @@ class ReportServices {
   // Constructor for ReportServices
 
   Future<List<Reports>> fetchReports() async {
-    Uri url = Uri.parse('http://192.168.18.74:3000/getUserReports');
+    Uri url = Uri.parse('http://192.168.71.223:3000/getUserReports');
     final response = await http.get(url);
           //   Fluttertoast.showToast(
           //   msg: '${response.statusCode}',
@@ -37,7 +37,7 @@ class ReportServices {
     //TODO: post selected incident type id to return incident sub type
 
   Future<bool> postReport(String image,int id, String location, String incidentType, String description, DateTime date, String risklevel, bool status) async {
-    Uri url = Uri.parse('http://192.168.18.74:3000/makeUserReport');
+    Uri url = Uri.parse('http://192.168.71.223:3000/makeUserReport');
     try {
       final http.Response response = await http.post(
         url,

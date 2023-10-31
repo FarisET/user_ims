@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_ims/services/UserServices.dart';
 import 'package:user_ims/widgets/report_tile.dart';
 
@@ -17,10 +18,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    getUsername();
+  }
+
+  void getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString("user_name");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double containerHeight = screenHeight*0.5;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           //TODO: get user name dynamically in welcome
                           Text(
-                            'Hi, Faris!',
+                            'Hi, $username!',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,

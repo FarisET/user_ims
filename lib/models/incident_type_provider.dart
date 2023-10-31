@@ -12,7 +12,8 @@ class IncidentProviderClass extends ChangeNotifier {
   bool loading = false;
   String? selectedIncident;
 
-  getPostData() async {
+
+  getIncidentPostData() async {
     // loading = true;
     incidentPost = (await fetchIncidentTypes());
     // loading = false;
@@ -29,7 +30,7 @@ class IncidentProviderClass extends ChangeNotifier {
     Future<List<IncidentType>> fetchIncidentTypes() async {
     loading = true;
     notifyListeners();
-    print('Fetching incident types...');    Uri url = Uri.parse('http://192.168.18.74:3000/getIncidentTypes');
+    print('Fetching incident types...');    Uri url = Uri.parse('http://192.168.71.223:3000/getIncidentTypes');
     final response = await http.get(url);
             Fluttertoast.showToast(
             msg: '${response.statusCode}',

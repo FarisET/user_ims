@@ -173,9 +173,33 @@ void handleSubmitted(BuildContext context) async {
   if (loginSuccessful) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("user_id", (cuserid.text));
+    //  await prefs.setString("user_name", user_name);
     print('shared preference: ${prefs.toString()}');
-    Navigator.pushNamed(context, '/home_page');  
-  } 
+    String? userRole = prefs.getString("role");
+    print('role:$userRole');
+
+    if (userRole != null) {
+      if (userRole == "admin") {
+        // Navigate to the admin screen
+        Navigator.pushNamed(context, '/admin_home_page');
+
+      } else if (userRole == "user") {
+        // Navigate to the user screen
+        Navigator.pushNamed(context, '/home_page');
+
+      } else if (userRole == "action_team") {
+        // Navigate to the user screen
+        Navigator.pushNamed(context, '/action_team_home_page');
+      
+    
+      // Handle the case where the role is not available in preferences
+      // You can show an error or take some default action
+    }
+  }  else {
+      throw Exception('Login Error');// Navigator.pushNamed(context, '/home_page');  
+    } 
+  }
+}
   // else {
         // Fluttertoast.showToast(
         //     msg: "Login Failed",
@@ -190,5 +214,5 @@ void handleSubmitted(BuildContext context) async {
     SystemNavigator.pop(); // This will close the app
   }
 
-}
+
 

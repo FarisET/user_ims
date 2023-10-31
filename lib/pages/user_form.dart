@@ -9,6 +9,8 @@ import 'package:user_ims/models/incident_types.dart';
 import 'package:user_ims/services/ReportServices.dart';
 import 'package:provider/provider.dart';
 
+import '../models/incident_sub_type.dart';
+import '../models/incident_subtype_provider.dart';
 import '../models/incident_type_provider.dart';
 
 class UserForm extends StatefulWidget {
@@ -23,7 +25,8 @@ class _UserFormState extends State<UserForm> {
   int selectedChipIndex = -1;
   List<bool> isSelected = [false, false, false];
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
-  String incidentType = 'Safety';
+  String incidentType = '';
+  String incidentSubType = '';
   List<String> dropdownMenuEntries = [];
 
   Color? _getSelectedColor(int index) {
@@ -47,10 +50,10 @@ class _UserFormState extends State<UserForm> {
   String risklevel = '';
   File? selectedImage; // Declare selectedImage as nullable
   String title = "PPE Violation";
-
+  String? SelectedIncidentType;
   DropdownMenuItem<String> buildMenuItem(IncidentType type) {
     return DropdownMenuItem<String>(
-      value: type.Incident_Type_Description,
+      value: type.Incident_Type_ID,
       child: Padding(
         padding: const EdgeInsets.only(left: 12.0),
         child: Row(
@@ -69,11 +72,35 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
+  DropdownMenuItem<String> buildSubMenuItem(IncidentSubType type) {
+    return DropdownMenuItem<String>(
+      value: type.Incident_SubType_ID,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            Icon(Icons.health_and_safety, color: Colors.blue),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                type.Incident_SubType_Description,
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Provider.of<IncidentProviderClass>(context, listen: false).getPostData();
+      Provider.of<IncidentProviderClass>(context, listen: false).getIncidentPostData();
+      Provider.of<SubIncidentProviderClass>(context, listen: false).getSubIncidentPostData();
+
     });
   }
 
@@ -235,10 +262,13 @@ class _UserFormState extends State<UserForm> {
                                               ...selectedVal.incidentPost!.map((type) {
                                                 return buildMenuItem(type);
                                               }).toList(),
-                                            ],
+                                              ],
                                             onChanged: (v) {
                                               print('Selected Incident: $v');
                                               selectedVal.setIncidentType(v);
+                                              incidentType = v!;
+                                              SelectedIncidentType = v;
+                                              Provider.of<SubIncidentProviderClass>(context, listen: false).updateFilteredIncidentSubtypes(v);
                                             },
                                           );
 
@@ -248,6 +278,63 @@ class _UserFormState extends State<UserForm> {
                                 }
                               },
                             ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Consumer<SubIncidentProviderClass>(
+                              builder: (context, selectedValue, child) {
+                              final incidentSubTypes = selectedValue.filteredIncidentSubTypes;                                
+                                if (selectedValue.loading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(), // Display a loading indicator
+                                  );
+                                } else {
+                                   
+                                  if (SelectedIncidentType != null) {
+                                   return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FormField<String>(
+                                      builder: (FormFieldState<String> state) {
+                                        return DropdownButton<String>(
+                                            value: selectedValue.selectedSubIncident,
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                            isExpanded: true,
+                                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                                            underline: Container(),
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                value: null, // Placeholder value
+                                                child: Text('Select Incident Sub Type'),
+                                              ),
+                                              ...selectedValue.subIncidentPost!.map((type) {
+                                                return buildSubMenuItem(type);
+                                              }).toList(),
+                                               
+                                              ],
+                                            onChanged: (v) {
+                                              print('Selected Sub Incident: $v');
+                                              selectedValue.setSubIncidentType(v);
+                                              incidentSubType = v!;
+                                            },
+                                          );
+
+                                      },
+                                    ),
+                                  );
+                                  } else {
+                                    return Text('Please select an Incident Type first');
+                                  }
+                                }
+                              },
+                            ),
+
+
                           ],
                         ),
                       ),
@@ -320,7 +407,7 @@ class _UserFormState extends State<UserForm> {
                   width: MediaQuery.of(context).size.width,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue[400],
+                      backgroundColor: Colors.blue[400],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
