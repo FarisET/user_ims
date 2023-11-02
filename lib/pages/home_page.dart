@@ -20,7 +20,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   String? username;
-
+  String? user_id;
+  
   @override
   void initState() {
     super.initState();
@@ -31,6 +32,8 @@ class _HomePageState extends State<HomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       username = prefs.getString("user_name");
+      user_id = prefs.getString("user_id");
+
     });
   }
 

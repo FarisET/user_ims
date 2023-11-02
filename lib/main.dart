@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_ims/actionTeam_pages/action_team_home_page.dart';
 import 'package:user_ims/admin_pages/admin_home_page.dart';
-import 'package:user_ims/models/incident_type_provider.dart';
+import 'package:user_ims/providers/incident_type_provider.dart';
 import 'package:user_ims/pages/home_page.dart';
 import 'package:user_ims/pages/login_page.dart';
 import 'package:user_ims/pages/user_form.dart';
+import 'package:user_ims/providers/location_provider.dart';
+import 'package:user_ims/providers/sub_location_provider.dart';
 
-import 'models/incident_subtype_provider.dart';
+import 'providers/incident_subtype_provider.dart';
 import 'pages/error_page.dart';
 
 void main() {
@@ -21,7 +23,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
       ChangeNotifierProvider<IncidentProviderClass>(create: (context) => IncidentProviderClass()),
-      ChangeNotifierProvider<SubIncidentProviderClass>(create: (context) => SubIncidentProviderClass())
+      ChangeNotifierProvider<SubIncidentProviderClass>(create: (context) => SubIncidentProviderClass()),
+      ChangeNotifierProvider<LocationProviderClass>(create: (context) => LocationProviderClass()),
+       ChangeNotifierProvider<SubLocationProviderClass>(create: (context) => SubLocationProviderClass())
+
     ],
       child: MaterialApp(
           onUnknownRoute: (settings) {

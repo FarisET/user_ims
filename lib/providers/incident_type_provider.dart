@@ -5,7 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-import 'incident_types.dart';
+import '../constants.dart';
+import '../models/incident_types.dart';
 
 class IncidentProviderClass extends ChangeNotifier {
   List<IncidentType>? incidentPost;
@@ -30,24 +31,25 @@ class IncidentProviderClass extends ChangeNotifier {
     Future<List<IncidentType>> fetchIncidentTypes() async {
     loading = true;
     notifyListeners();
-    print('Fetching incident types...');    Uri url = Uri.parse('http://192.168.71.223:3000/getIncidentTypes');
+    print('Fetching incident types...');   
+    Uri url = Uri.parse('http://${IP_URL}:3000/userReport/dashboard/fetchincidentType');
     final response = await http.get(url);
-            Fluttertoast.showToast(
-            msg: '${response.statusCode}',
-            toastLength: Toast.LENGTH_SHORT,
-          );
+          //   Fluttertoast.showToast(
+          //   msg: '${response.statusCode}',
+          //   toastLength: Toast.LENGTH_SHORT,
+          // );
 
-    if(response.statusCode==200) {
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-    List<dynamic> parseListJson = jsonResponse['incidentTypes'];
-    List<IncidentType> prevReportList = List<IncidentType>.from(
-      parseListJson.map<IncidentType>((dynamic i) => IncidentType.fromJson(i))).toList();
+
+  if (response.statusCode == 200) {
+    List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
+    List<IncidentType> incidentList = jsonResponse
+        .map((dynamic item) => IncidentType.fromJson(item as Map<String, dynamic>))
+        .toList();
       loading = false;
       notifyListeners();
-      print('Loading completed');   
-      return prevReportList;
-    
-    }
+      print('incident type Loaded');  
+    return incidentList;
+  }
    loading = false;
     notifyListeners();
     print('Failed to load incident types');

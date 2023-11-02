@@ -41,7 +41,7 @@ class _ReportTileState extends State<ReportTile> {
                     shape: RoundedRectangleBorder(
                       borderRadius:BorderRadius.circular(4),
                       side: BorderSide(
-                        color: item.status?Colors.greenAccent:Colors.redAccent,
+                        color: item.status!.contains('open')?Colors.greenAccent:Colors.redAccent,
                         width:0.5)),                      clipBehavior: Clip.antiAliasWithSaveLayer,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -57,7 +57,7 @@ class _ReportTileState extends State<ReportTile> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(item.incidentType,
+                                      Text(item.incidentSubtypeDescription!,
                                       style: TextStyle(
                                         color: Colors.blue,
                                         fontSize: 18
@@ -69,12 +69,21 @@ class _ReportTileState extends State<ReportTile> {
                             
                             Padding(
                               padding: const EdgeInsets.only(bottom:4.0),
-                              child: Text('${item.location}, ${item.date}'),
+                              child: Text('${item.subLocationName}, ${item.dateTime}'),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom:4.0),
-                              child: Text('By: Faris Ejaz'),
+                              child: Text('Description: ${item.description}'),
                             ),
+                             Padding(
+                              padding: const EdgeInsets.only(bottom:4.0),
+                              child: Text('${item.incidentCriticalityLevel}'),
+                            ),
+                            //TODO: try image
+                            // Padding(
+                            //   padding: const EdgeInsets.only(bottom:4.0),
+                            //   child: Text('By: Faris Ejaz'),
+                            // ),
                             //TODO: get user name dynamically
                             SizedBox(
                               height: 30,
@@ -83,7 +92,7 @@ class _ReportTileState extends State<ReportTile> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Last Modified:11, August 2023 at 11:09 am'),
-                                item.status ? Text('Closed',
+                                item.incidentCriticalityLevel!.contains('closed') ? Text('Closed',
                                 style: TextStyle(color: Colors.green),) :
                                 Text('Open',
                                 style: TextStyle(color: Colors.red),)

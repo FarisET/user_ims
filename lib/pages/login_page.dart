@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_ims/services/UserServices.dart';
 
@@ -25,17 +26,32 @@ import 'package:user_ims/services/UserServices.dart';
       @override
       void initState() {
         super.initState();
-        checkUserSession();
+    //    checkUserSession();
       }
 
       void checkUserSession() async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? userId = prefs.getString("user_id");
-        if (userId != null) {
-          // User is logged in, navigate to the home screen
-          Navigator.pushNamed(context, '/home_page'); // Replace with your home screen route
-        }
-      }
+        String? userRole = prefs.getString("role");
+    if (userId !=null && userRole != null) {
+      if (userRole == "admin") {
+        // Navigate to the admin screen
+        Navigator.pushNamed(context, '/admin_home_page');
+
+      } else if (userRole == "user") {
+        // Navigate to the user screen
+        Navigator.pushNamed(context, '/home_page');
+
+      } else if (userRole == "action_team") {
+        // Navigate to the user screen
+        Navigator.pushNamed(context, '/action_team_home_page');
+      
+    
+      // Handle the case where the role is not available in preferences
+      // You can show an error or take some default action
+    }
+  } 
+}
       
 
   @override

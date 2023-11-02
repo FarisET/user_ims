@@ -1,17 +1,26 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:user_ims/models/%20sub_location.dart';
 import 'package:user_ims/models/incident_types.dart';
+import 'package:user_ims/models/location.dart';
+import 'package:user_ims/models/user.dart';
+import 'package:user_ims/providers/sub_location_provider.dart';
 import 'package:user_ims/services/ReportServices.dart';
 import 'package:provider/provider.dart';
 
 import '../models/incident_sub_type.dart';
-import '../models/incident_subtype_provider.dart';
-import '../models/incident_type_provider.dart';
+import '../providers/incident_subtype_provider.dart';
+import '../providers/incident_type_provider.dart';
+import '../models/report.dart';
+import 'package:http/http.dart' as http;
+
+import '../providers/location_provider.dart';
 
 class UserForm extends StatefulWidget {
   const UserForm({Key? key});
@@ -25,6 +34,7 @@ class _UserFormState extends State<UserForm> {
   int selectedChipIndex = -1;
   List<bool> isSelected = [false, false, false];
   List<String> chipLabels = ['Minor', 'Serious', 'Critical'];
+  List<String> chipLabelsid = ['CRT1', 'CRT2', 'CRT3'];
   String incidentType = '';
   String incidentSubType = '';
   List<String> dropdownMenuEntries = [];
@@ -43,7 +53,7 @@ class _UserFormState extends State<UserForm> {
   }
 
   int id = 0; // auto-generated
-  String location = '';
+  //String location = '';
   String description = '';
   DateTime date = DateTime.now();
   bool status = false; // how to update, initially false, will be changed by admin.
@@ -51,6 +61,9 @@ class _UserFormState extends State<UserForm> {
   File? selectedImage; // Declare selectedImage as nullable
   String title = "PPE Violation";
   String? SelectedIncidentType;
+  String? SelectedLocationType;
+  String SelectedSubLocationType='';
+
   DropdownMenuItem<String> buildMenuItem(IncidentType type) {
     return DropdownMenuItem<String>(
       value: type.Incident_Type_ID,
@@ -94,12 +107,65 @@ class _UserFormState extends State<UserForm> {
   }
 
 
+  DropdownMenuItem<String> buildLocationMenuItem(Location type) {
+    return DropdownMenuItem<String>(
+      value: type.Location_ID,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            Icon(Icons.health_and_safety, color: Colors.blue),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                type.Location_Name,
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+    DropdownMenuItem<String> buildSubLocationMenuItem(SubLocation type) {
+    return DropdownMenuItem<String>(
+      value: type.Sub_Location_ID,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Row(
+          children: [
+            Icon(Icons.health_and_safety, color: Colors.blue),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                type.Sub_Location_Name,
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<IncidentProviderClass>(context, listen: false).getIncidentPostData();
-      Provider.of<SubIncidentProviderClass>(context, listen: false).getSubIncidentPostData();
+      if (SelectedIncidentType != null) {
+    Provider.of<SubIncidentProviderClass>(context, listen: false).getSubIncidentPostData(SelectedIncidentType!);
+      }
+
+      Provider.of<LocationProviderClass>(context, listen: false).getLocationPostData();
+      if (SelectedIncidentType != null) {
+    Provider.of<SubLocationProviderClass>(context, listen: false).getSubLocationPostData(SelectedLocationType!);
+      }
+
 
     });
   }
@@ -183,41 +249,162 @@ class _UserFormState extends State<UserForm> {
                         },
                         child: Text(selectedImage != null ? 'Image Added\n${selectedImage!.path}' : 'Add Image'),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 30.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Location',
-                            hintText: 'Name the location, area, or site',
-                            prefixIcon: Icon(Icons.location_pin, color: Colors.blue),
-                            fillColor: Colors.blue,
-                            labelStyle: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Something';
-                            }
-                            return null;
-                          },
-                          onChanged: (value) => setState(() => location = value),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 30.0),
+                      //   child: TextFormField(
+                      //     decoration: InputDecoration(
+                      //       labelText: 'Location',
+                      //       hintText: 'Name the location, area, or site',
+                      //       prefixIcon: Icon(Icons.location_pin, color: Colors.blue),
+                      //       fillColor: Colors.blue,
+                      //       labelStyle: TextStyle(
+                      //         color: Colors.blue,
+                      //         fontWeight: FontWeight.normal,
+                      //       ),
+                      //       enabledBorder: OutlineInputBorder(
+                      //         borderSide: BorderSide(color: Colors.blue),
+                      //         borderRadius: BorderRadius.circular(10.0),
+                      //       ),
+                      //       focusedBorder: OutlineInputBorder(
+                      //         borderSide: BorderSide(color: Colors.green),
+                      //         borderRadius: BorderRadius.circular(10.0),
+                      //       ),
+                      //     ),
+                      //     validator: (value) {
+                      //       if (value == null || value.isEmpty) {
+                      //         return 'Enter Something';
+                      //       }
+                      //       return null;
+                      //     },
+                      //     onChanged: (value) => setState(() => location = value),
+                      //   ),
+                      // ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 30.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Text(
+                                'Select Location',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Consumer<LocationProviderClass>(
+                              builder: (context, selectedVal, child) {
+                                if (selectedVal.loading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(), // Display a loading indicator
+                                  );
+                                } else {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FormField<String>(
+                                      builder: (FormFieldState<String> state) {
+                                        return DropdownButton<String>(
+                                            value: selectedVal.selectedLocation,
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                            isExpanded: true,
+                                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                                            underline: Container(),
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                value: null, // Placeholder value
+                                                child: Text('Select Location'),
+                                              ),
+                                              if (selectedVal != null && selectedVal.LocationPost != null)
+                                                ...selectedVal.LocationPost!.map((type) {
+                                                  return buildLocationMenuItem(type);
+                                                }).toList(),
+                                              ],
+                                            onChanged: (v) {
+                                              print('Selected location: $v');
+                                              selectedVal.setLocation(v);
+                                          //    incidentType = v!;
+                                              SelectedLocationType = v!;
+                                              print('selected location:$SelectedLocationType');
+                                            Provider.of<SubLocationProviderClass>(context, listen: false).selectedSubLocation = null;
+                                            Provider.of<SubLocationProviderClass>(context, listen: false).getSubLocationPostData(v!);
+
+                                            },
+                                          );
+
+                                      },
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Consumer<SubLocationProviderClass>(
+                              builder: (context, selectedValue, child) {
+                           //   final incidentSubTypes = selectedValue.filteredIncidentSubTypes;                                
+                                if (selectedValue.loading) {
+                                  return Center(
+                                    child: CircularProgressIndicator(), // Display a loading indicator
+                                  );
+                                } 
+                               // else if (SelectedIncidentType != null){                                   
+                                   return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FormField<String>(
+                                      builder: (FormFieldState<String> state) {
+                                        return DropdownButton<String>(
+                                            value: selectedValue.selectedSubLocation,
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                            isExpanded: true,
+                                            icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                                            underline: Container(),
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                value: null, // Placeholder value
+                                                child: Text('Select Location Sub Type'),
+                                              ),
+                                              if (selectedValue!= null && selectedValue.subLocationtPost != null)
+                                                ...selectedValue.subLocationtPost!.map((type) {
+                                                  return buildSubLocationMenuItem(type);
+                                                }).toList(),                                               
+                                              ],
+                                            onChanged: (v) {
+                                              selectedValue.setSubLocationType(v!);
+                                              SelectedSubLocationType = v!;
+                                              print('Selected Sub Location: $SelectedSubLocationType');
+
+
+                                            },
+                                          );
+
+                                      },
+                                    ),
+                                  );
+                                  } 
+                                  // else {
+                                  //   return Text('Please select an Incident Type first');
+                                  
+                                
+                            ),
+
                             Padding(
                               padding: const EdgeInsets.only(left: 12),
                               child: Text(
@@ -259,16 +446,19 @@ class _UserFormState extends State<UserForm> {
                                                 value: null, // Placeholder value
                                                 child: Text('Select Incident Type'),
                                               ),
-                                              ...selectedVal.incidentPost!.map((type) {
-                                                return buildMenuItem(type);
-                                              }).toList(),
+                                              if (selectedVal != null && selectedVal.incidentPost != null)
+                                                ...selectedVal.incidentPost!.map((type) {
+                                                  return buildMenuItem(type);
+                                                }).toList(),
                                               ],
                                             onChanged: (v) {
                                               print('Selected Incident: $v');
                                               selectedVal.setIncidentType(v);
                                               incidentType = v!;
                                               SelectedIncidentType = v;
-                                              Provider.of<SubIncidentProviderClass>(context, listen: false).updateFilteredIncidentSubtypes(v);
+                                            Provider.of<SubIncidentProviderClass>(context, listen: false).selectedSubIncident = null;
+                                            Provider.of<SubIncidentProviderClass>(context, listen: false).getSubIncidentPostData(v);
+
                                             },
                                           );
 
@@ -278,19 +468,19 @@ class _UserFormState extends State<UserForm> {
                                 }
                               },
                             ),
+
                             SizedBox(
                               height: 30,
                             ),
                             Consumer<SubIncidentProviderClass>(
                               builder: (context, selectedValue, child) {
-                              final incidentSubTypes = selectedValue.filteredIncidentSubTypes;                                
+                         //     final incidentSubTypes = selectedValue.filteredIncidentSubTypes;                                
                                 if (selectedValue.loading) {
                                   return Center(
                                     child: CircularProgressIndicator(), // Display a loading indicator
                                   );
-                                } else {
-                                   
-                                  if (SelectedIncidentType != null) {
+                                } 
+                               // else if (SelectedIncidentType != null){                                   
                                    return Container(
                                     decoration: BoxDecoration(
                                       border: Border.all(color: Colors.blue),
@@ -312,26 +502,29 @@ class _UserFormState extends State<UserForm> {
                                                 value: null, // Placeholder value
                                                 child: Text('Select Incident Sub Type'),
                                               ),
-                                              ...selectedValue.subIncidentPost!.map((type) {
-                                                return buildSubMenuItem(type);
-                                              }).toList(),
-                                               
+                                              if (selectedValue!= null && selectedValue.subIncidentPost != null)
+                                                ...selectedValue.subIncidentPost!.map((type) {
+                                                  return buildSubMenuItem(type);
+                                                }).toList(),                                               
                                               ],
                                             onChanged: (v) {
                                               print('Selected Sub Incident: $v');
                                               selectedValue.setSubIncidentType(v);
                                               incidentSubType = v!;
+
+
+
                                             },
                                           );
 
                                       },
                                     ),
                                   );
-                                  } else {
-                                    return Text('Please select an Incident Type first');
-                                  }
-                                }
-                              },
+                                  } 
+                                  // else {
+                                  //   return Text('Please select an Incident Type first');
+                                  
+                                
                             ),
 
 
@@ -392,7 +585,8 @@ class _UserFormState extends State<UserForm> {
                               setState(() {
                                 for (int i = 0; i < isSelected.length; i++) {
                                   isSelected[i] = i == index ? selected : false;
-                                  risklevel = chipLabels[index];
+                                  risklevel = chipLabelsid[index];
+                                  print('crit level: $risklevel');
                                 }
                               });
                             },
@@ -460,13 +654,14 @@ void handleReportSubmitted(BuildContext context, _UserFormState userFormState) a
   ReportServices reportServices = ReportServices(context);
   final loginSuccessful = await reportServices.postReport(
     userFormState.selectedImage!.toString(),
-    userFormState.id,
-    userFormState.incidentType,
-    userFormState.location,
+  //  userFormState.id,
+    userFormState.incidentSubType,
+    userFormState.SelectedSubLocationType,
     userFormState.description,
     userFormState.date,
     userFormState.risklevel,
-    userFormState.status,
+
+   // userFormState.status,
   );
 
   if (loginSuccessful) {

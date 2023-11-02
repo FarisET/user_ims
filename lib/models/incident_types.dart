@@ -11,8 +11,8 @@ class IncidentType {
     
     factory IncidentType.fromJson(Map<String, dynamic> json) {
       return IncidentType(
-       Incident_Type_ID: json['Incident_Type_ID'] ?? '',
-       Incident_Type_Description: json['Incident_Type_Description'] ?? ''
+       Incident_Type_ID: json['incident_type_id'] ?? '',
+       Incident_Type_Description: json['incident_type_description'] ?? ''
         );
         
     }

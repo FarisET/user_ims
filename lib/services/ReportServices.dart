@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../constants.dart';
 import '../models/incident_sub_type.dart';
 import '../models/incident_types.dart';
 import '../models/report.dart';
@@ -12,46 +14,70 @@ class ReportServices {
 
   ReportServices(this.context);  
   // Constructor for ReportServices
+  String? current_user_id;
 
-  Future<List<Reports>> fetchReports() async {
-    Uri url = Uri.parse('http://192.168.71.223:3000/getUserReports');
-    final response = await http.get(url);
-          //   Fluttertoast.showToast(
-          //   msg: '${response.statusCode}',
-          //   toastLength: Toast.LENGTH_SHORT,
-          // );
-
-    if(response.statusCode==200) {
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-    List<dynamic> parseListJson = jsonResponse['reports'];
-    List<Reports> prevReportList = List<Reports>.from(
-      parseListJson.map<Reports>((dynamic i) => Reports.fromJson(i))).toList();
-      return prevReportList;
+ // void getUsername() async {
     
-    } 
-   throw Exception('Failed to load Reports');
-    }
+      
+ // }
+
+Future<List<Reports>> fetchReports() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  current_user_id = prefs.getString("user_id");
+  print('current user in sp: $current_user_id');
+  Uri url = Uri.parse('http://${IP_URL}:3000/userReport/dashboard/$current_user_id/reports');
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    List<dynamic> jsonResponse = jsonDecode(response.body) as List<dynamic>;
+    List<Reports> reportList = jsonResponse
+        .map((dynamic item) => Reports.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return reportList;
+  }
+
+  throw Exception('Failed to load Reports');
+}    
+
+Future<void> postSelectedIncidentType(String selectedIncidentType) async {
+  // Specify the complete URL including the endpoint path
+  Uri url = Uri.parse('http://${IP_URL}:3000/userReport/dashboard/fetchincidentsubType');
+
+  final http.Response response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode(
+      <String, dynamic>{
+        "incident_type_id": selectedIncidentType,
+      },
+    ),
+  );
+
+}
 
 
 
     //TODO: post selected incident type id to return incident sub type
-
-  Future<bool> postReport(String image,int id, String location, String incidentType, String description, DateTime date, String risklevel, bool status) async {
-    Uri url = Uri.parse('http://192.168.71.223:3000/makeUserReport');
+  
+  Future<bool> postReport(String image, String sublocation, String incidentSubType, String description, DateTime date, String risklevel) async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+    current_user_id = prefs.getString("user_id");
+    print('current_user_id:$current_user_id');
+    Uri url = Uri.parse('http://${IP_URL}:3000/userReport/dashboard/$current_user_id/MakeReport');
     try {
       final http.Response response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(
           <String,dynamic>{
-          "image":image.toString(),
-          "id":id,
-          "incidentType":incidentType,
-           "location":location,
-           "description":description,
-           "date": date.toLocal().toIso8601String().split(".")[0], // Serialize DateTime to string   
-           "status":status, //how to update, initial false, will be changed by admin.
-           "risklevel":risklevel
+          "image":image,
+        //  "id":id,
+          "incident_subtype_id":sublocation,
+           "sub_location_id":incidentSubType,
+           "report_description":description,
+           "date_time": date.toLocal().toIso8601String().split(".")[0], // Serialize DateTime to string   
+         //  "status":status, //how to update, initial false, will be changed by admin.
+           "incident_criticality_id":risklevel
          //  "reported_by": reported_by
       },
     ),

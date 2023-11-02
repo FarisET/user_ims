@@ -4,13 +4,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants.dart';
+
 class UserServices {
   final BuildContext context;  // Include the BuildContext in the constructor
 
   UserServices(this.context);  // Constructor for UserServices
 
   Future<bool> login(String id, String password) async {
-    Uri url = Uri.parse('http://192.168.71.223:3000/login');
+    Uri url = Uri.parse('http://${IP_URL}:3000/user/login');
     try {
       final http.Response response = await http.post(
         url,
