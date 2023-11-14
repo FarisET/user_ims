@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'role.dart';
 
 class User {
   final String user_name;

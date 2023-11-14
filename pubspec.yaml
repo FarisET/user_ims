@@ -42,6 +42,9 @@ dependencies:
   shared_preferences: ^2.2.2
   image_picker: ^1.0.4
   provider: ^6.0.5
+  dart_jsonwebtoken: ^2.12.1
+  flutter_secure_storage: ^9.0.0
+  smooth_page_indicator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +72,8 @@ flutter:
   assets:
      - assets/palm_logo.png
      - assets/json/incident/report.json
+     - assets/safify_logo.png
+     - assets/safify_icon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

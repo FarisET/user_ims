@@ -1,5 +1,6 @@
 class Reports {
   final int? id;
+  final String? user_id;
   final String? description;
   final String? dateTime;
  // final Stream location;
@@ -9,10 +10,11 @@ class Reports {
   final String? incidentSubtypeDescription;
   final String? incidentCriticalityLevel;
   final String? incidentCriticalityID;
-  final Map<String, dynamic> image; // You may need to adjust this property's type 
+  final Map<String, dynamic>? image; // You may need to adjust this property's type 
   final String? status;
 
   Reports({
+    required this.user_id,
     required this.id,
     required this.description,
     required this.dateTime,
@@ -29,8 +31,9 @@ class Reports {
 
   factory Reports.fromJson(Map<String, dynamic> json) {
     return Reports(
+      user_id: json['user_id'] as String?,
       id: json['user_report_id'],
-      description: json['report_description'],
+      description: json['report_description'] as String?,
       dateTime: json['date_time'],
    //   location: json['location_name'],
       subLocationName: json['sub_location_name'] as String?,
@@ -39,7 +42,7 @@ class Reports {
       incidentSubtypeDescription: json['incident_subtype_description'],
       incidentCriticalityLevel: json['incident_criticality_level'] as String?,
       incidentCriticalityID: json['incident_criticality_id'] as String?,
-      image: json['image'], 
+      image: json['image'] as Map<String, dynamic>?, 
       status: json['status'],// You may need to adjust this based on the actual data type
     );
   }
